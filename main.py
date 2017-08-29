@@ -113,10 +113,14 @@ class NeuralNetwork:
 
         # Weights generated at the linear region of activation function is
         # easier to learn
-        loc = 0.5 if activator_fn[0] == Activator.relu else 0
-        self.weights = [np.array([0])] + [
-            np.random.normal(loc=loc, scale=(1 / np.sqrt(x)), size=(y, x))
-            for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+        if activator_fn[0] == Activator.relu:
+            self.weights = [np.array([0])] + [
+                np.random.normal(loc=0, scale=(2 / (x+y)), size=(y, x))
+                for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+        else:
+            self.weights = [np.array([0])] + [
+                np.random.normal(loc=0, scale=(1 / np.sqrt(x)), size=(y, x))
+                for x, y in zip(self.sizes[:-1], self.sizes[1:])]
 
         # Input layer does not have any biases. self.biases[0] is redundant.
         self.biases = [np.random.randn(y, 1) for y in sizes]
