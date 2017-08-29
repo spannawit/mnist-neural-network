@@ -3,7 +3,12 @@
 ===============================================================================
 MNIST Handwritten Digit Classifier with Neural Network
 ===============================================================================
-This implementation is modified from Scikit Learn's online_lda code
+Implementation of multi-layer neural network with stochastic gradient descent
+(SGD) optimization method includingparameters for learning rate and
+regularization.
+
+Other functions are grouped in class instead of separated into files for
+readability.
 
 Author: Pannawit Samatthiyadikun
 """
@@ -87,9 +92,6 @@ class Activator:
 # Neural Network
 # -----------------------------------------------------------------------------
 class NeuralNetwork:
-    """
-
-    """
 
     def __init__(self,
                  sizes=list(),
@@ -106,12 +108,13 @@ class NeuralNetwork:
         # First term corresponds to layer 0 (input layer).
         # No weights enter the input layer and hence self.weights[0] is
         # redundant.
-        # Weights are generated
-        self.weights = [np.array([0])] + [np.random.randn(y, x) / np.sqrt(y)
-                                          for x, y in zip(self.sizes[:-1], self.sizes[1:])]
-        # self.weights = [np.array([0])] + [
-        #     np.random.normal(loc=0, scale=(1 / np.sqrt(x)), size=(y, x))
-        #     for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+        # self.weights = [np.array([0])] + [np.random.randn(y, x) / np.sqrt(y)
+        #                                   for x, y in zip(self.sizes[:-1], self.sizes[1:])]
+
+        # Weights generated at the middle of sigmoid function is easier to learn
+        self.weights = [np.array([0])] + [
+            np.random.normal(loc=0, scale=(1 / np.sqrt(x)), size=(y, x))
+            for x, y in zip(self.sizes[:-1], self.sizes[1:])]
 
         # Input layer does not have any biases. self.biases[0] is redundant.
         self.biases = [np.random.randn(y, 1) for y in sizes]
