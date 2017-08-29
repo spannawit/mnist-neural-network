@@ -86,7 +86,7 @@ class Activator:
 
     @staticmethod
     def relu_prime(z):
-        return float(z > 0)
+        return (z > 0).astype(float)
 
 
 # Neural Network
@@ -108,12 +108,14 @@ class NeuralNetwork:
         # First term corresponds to layer 0 (input layer).
         # No weights enter the input layer and hence self.weights[0] is
         # redundant.
-        # self.weights = [np.array([0])] + [np.random.randn(y, x) / np.sqrt(y)
+        # self.weights = [np.array([0])] + [np.random.randn(y, x) / np.sqrt(x)
         #                                   for x, y in zip(self.sizes[:-1], self.sizes[1:])]
 
-        # Weights generated at the middle of sigmoid function is easier to learn
+        # Weights generated at the linear region of activation function is
+        # easier to learn
+        loc = 0.5 if activator_fn[0] == Activator.relu else 0
         self.weights = [np.array([0])] + [
-            np.random.normal(loc=0, scale=(1 / np.sqrt(x)), size=(y, x))
+            np.random.normal(loc=loc, scale=(1 / np.sqrt(x)), size=(y, x))
             for x, y in zip(self.sizes[:-1], self.sizes[1:])]
 
         # Input layer does not have any biases. self.biases[0] is redundant.
@@ -206,16 +208,16 @@ class NeuralNetwork:
     def total_cost(self, data):
 
         def cost_fn(a, y):
-            a = np.clip(a, 0, 1)
             return np.sum(np.nan_to_num(-y * np.log(a) - (1 - y) * np.log(1 - a)))
 
+        min = -1 if self.activator_fn[0] == Activator.tanh else 0
         cost = 0.0
         do_print = True
         for x, y in data:
             a, _ = self._forward_prop(x)
             if do_print:
                 do_print = False
-            cost += cost_fn(a[-1], vectorized_result(y)) / len(data)
+            cost += cost_fn(a[-1], vectorized_result(y, min=min)) / len(data)
         cost += 0.5 * (self.lmbda / len(data)) * sum(
             np.linalg.norm(w) ** 2 for w in self.weights)
         return cost
@@ -235,7 +237,8 @@ class NeuralNetwork:
         nabla_b = [np.zeros(bias.shape) for bias in self.biases]
         nabla_w = [np.zeros(weight.shape) for weight in self.weights]
 
-        error = (self._activations[-1] - vectorized_result(y))  # version with cross entropy
+        min = -1 if self.activator_fn[0] == Activator.tanh else 0
+        error = (self._activations[-1] - vectorized_result(y, min=min))  # version with cross entropy
         # error = (self._activations[-1] - y) * self.activator_fn[1](self._zs[-1])
         nabla_b[-1] = error
         nabla_w[-1] = error.dot(self._activations[-2].T)
@@ -441,8 +444,8 @@ class Experiment:
         np.savetxt(os.path.join(self.output_dir, 'summary.txt'), self.models_accuracy)
 
 
-def vectorized_result(y):
-    e = np.zeros((10, 1))
+def vectorized_result(y, min=0):
+    e = np.zeros((10, 1)) + min
     e[y] = 1.0
     return e
 
