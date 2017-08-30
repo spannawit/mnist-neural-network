@@ -5,7 +5,7 @@ Implementation in python language (with its standard library and Numpy only) of 
 Other functions are grouped in class instead of separated into files for readability.
 
 Following accuracy improvement strategies been done:
-1. Normalizing pixel value to range [0,1]
+1. Normalizing pixel values to range [0,1]
 2. Shuffling training data randomly for learning.
 3. Mini-batch learning.
 4. Weights are initialized from Normal distribution (mean=0, sd=sqrt(#input_unit)) to land around linear region of sigmoid (or tanh) function for fast learning.
