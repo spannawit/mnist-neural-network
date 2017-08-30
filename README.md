@@ -4,14 +4,14 @@ Implementation in python language (with its standard library and Numpy only) of 
 
 Other functions are grouped in class instead of separated into files for readability.
 
-Following accuracy improvement strategies been done:
+Following accuracy improvement strategies have been done:
 1. Normalizing pixel values to range [0,1]
 2. Shuffling training data randomly for learning.
 3. Mini-batch learning.
 4. Weights are initialized from Normal distribution (mean=0, sd=sqrt(#input_unit)) to land around linear region of sigmoid (or tanh) function for fast learning.
-   Although ReLu and softmax are available, the network is not optimized for them yet.
 
-* ReLu and softmax does not work well with cross entropy cost function which is used in the code.
+* Although ReLu and softmax are available, the network is not optimized for them yet.
+  ReLu and softmax does not work well with cross entropy cost function which is used in the code.
   Also usually, they are usually used in the hidden layer and output layer, respectively.
 
 Experiment procedure:
